@@ -1,4 +1,5 @@
 from pytube import YouTube
+import os
 
 
 def download_video(url, output_path="."):
@@ -9,15 +10,29 @@ def download_video(url, output_path="."):
         # Get the highest resolution stream available
         video_stream = yt.streams.get_highest_resolution()
 
-        # Download the video to the specified output path
-        video_stream.download(output_path)
+        # Create the "TopVideo" folder if it doesn't exist
+        output_folder = os.path.join(output_path, "TopVideo")
+        os.makedirs(output_folder, exist_ok=True)
 
-        print("Download completed successfully!")
+        # Download the video to the "TopVideo" folder
+        video_stream.download(output_folder)
+
+        print(f"Download completed successfully for {yt.title}!")
 
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        print(f"An error occurred for {url}: {str(e)}")
 
 
-# Example usage
-video_url = "https://www.youtube.com/watch?v=5KnSKS9S0AQ"
-download_video(video_url)
+# Read URLs from playlist_urls.txt and download each video to the "TopVideo" folder
+with open("playlist_urls.txt", "r") as file:
+    urls = file.readlines()
+
+for url in urls:
+    # Remove any leading or trailing whitespace
+    url = url.strip()
+
+    # Check if the line is not empty
+    if url:
+        # Assume that the URL is complete, otherwise, modify as needed
+        video_url = "https://www.youtube.com/watch?v=" + url
+        download_video(video_url, output_path=".")
